@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Quiz</title>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #08090c;
+            color: #ffffff;
+            background-color: #000000;
+            background-size: cover;
+            background-position: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .quiz-container {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
+            padding: 2rem;
+            width: 100%;
+            max-width: 600px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-sizing: border-box;
+        }
+        .quiz-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #e0f2fe;
+            text-align: center;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 0.25rem rgba(0, 0, 0, 0.5);
+        }
+        #question-container {
+            margin-bottom: 2rem;
+        }
+        #question-text {
+            font-size: 1.8rem;
+            font-weight: 500;
+            color: #ffffff;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 0 0.1rem rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+        .option-button {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            font-weight: 600;
+            padding: 1rem 2rem;
+            border-radius: 0.75rem;
+            width: 100%;
+            text-align: left;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+            font-size: 1.2rem;
+        }
+        .option-button:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.02);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        .option-button:disabled {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #b0bec5;
+            border-color: rgba(255, 255, 255, 0.05);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        #feedback {
+            margin-top: 2rem;
+            padding: 1.2rem;
+            border-radius: 0.75rem;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.2rem;
+            opacity: 0.9;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+        }
+        .correct-feedback {
+            background-color: rgba(56, 189, 248, 0.2);
+            color: #38bdf8;
+            border-color: #38bdf8;
+        }
+        .incorrect-feedback {
+            background-color: rgba(244, 114, 182, 0.2);
+            color: #f472b6;
+            border-color: #f472b6;
+        }
+        #next-button {
+            margin-top: 2rem;
+            padding: 1rem 2rem;
+            border-radius: 0.75rem;
+            background-color: #4fc3f7;
+            color: #08090c;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            width: 100%;
+            border: none;
+            font-size: 1.2rem;
+            box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+        }
+        #next-button:hover {
+            background-color: #03a9f4;
+            transform: scale(1.02);
+            box-shadow: 0 0.35rem 0.75rem rgba(0, 0, 0, 0.2);
+        }
+        #next-button:disabled {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #b0bec5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        #results-container {
+            margin-top: 2rem;
+            text-align: center;
+        }
+        #results-heading {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #b2ebf2;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 0 0.25rem rgba(0, 0, 0, 0.5);
+        }
+        #final-score {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+        #restart-button {
+            margin-top: 1.5rem;
+            padding: 1rem 2rem;
+            border-radius: 0.75rem;
+            background-color: #69f0ae;
+            color: #08090c;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            width: 100%;
+            border: none;
+            font-size: 1.2rem;
+            box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+        }
+        #restart-button:hover {
+            background-color: #00e676;
+            transform: scale(1.02);
+            box-shadow: 0 0.35rem 0.75rem rgba(0, 0, 0, 0.2);
+        }
+        #restart-button:disabled {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #b0bec5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .progress-container {
+            margin-top: 1.5rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 0.75rem;
+            height: 1rem;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: inset 0 0.125rem 0.25rem rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+        .progress-bar {
+            background-color: #a7f3d0;
+            height: 100%;
+            border-radius: 0.75rem;
+            width: 0%;
+            transition: width 0.3s ease;
+            position: relative;
+            box-shadow: 0 0 0.5rem rgba(167, 243, 208, 0.5);
+        }
+        .progress-text {
+            color: #ffffff;
+            font-size: 1rem;
+            text-align: center;
+            margin-top: 0.5rem;
+            opacity: 0.8;
+            text-shadow: 0 0 0.1rem rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="quiz-container">
+        <h1 class="quiz-title">Space Quiz</h1>
+        <div id="question-container" class="mb-6">
+            <h2 id="question-text" class="text-xl font-semibold text-gray-800 mb-4"></h2>
+            <div id="options-container" class="space-y-3">
+                </div>
+        </div>
+        <div id="feedback" class="mt-4 p-4 rounded-md text-center font-medium hidden">
+            </div>
+        <button id="next-button" class="mt-4 py-2 px-4 rounded-md text-white font-semibold transition-colors duration-300 ease-in-out hidden" disabled>
+            Next
+        </button>
+        <div id="results-container" class="mt-6 text-center hidden">
+            <h2 id="results-heading" class="text-2xl font-semibold text-green-600 mb-4">Results</h2>
+            <p class="text-lg font-medium text-gray-700 mb-4">Your Score: <span id="final-score" style="font-size: 2rem; font-weight: 600; color: #ffffff;">0</span></p>
+            <button id="restart-button" class="py-2 px-4 rounded-md text-white font-semibold transition-colors duration-300 ease-in-out">
+                Restart Quiz
+            </button>
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <p class="progress-text" id="progress-text">Question: 0/10</p>
+    </div>
+    <script>
+        const quizData = [
+            {
+                question: "What is the largest planet in our solar system?",
+                options: ["Mars", "Jupiter", "Saturn", "Neptune"],
+                correctAnswer: "Jupiter"
+            },
+            {
+                question: "What is the name of our galaxy?",
+                options: ["Andromeda", "Milky Way", "Triangulum", "Centaurus A"],
+                correctAnswer: "Milky Way"
+            },
+            {
+                question: "What is the hottest planet in our solar system?",
+                options: ["Venus", "Mars", "Mercury", "Earth"],
+                correctAnswer: "Venus"
+            },
+            {
+                question: "What is the only natural satellite of Earth?",
+                options: ["Phobos", "Deimos", "Moon", "Europa"],
+                correctAnswer: "Moon"
+            },
+            {
+                question: "What is the name of the first man to walk on the moon?",
+                options: ["Buzz Aldrin", "Neil Armstrong", "Yuri Gagarin", "Alan Shepard"],
+                correctAnswer: "Neil Armstrong"
+            },
+             {
+                question: "Which planet is known as the 'Red Planet'?",
+                options: ["Venus", "Mars", "Jupiter", "Saturn"],
+                correctAnswer: "Mars"
+            },
+            {
+                question: "What is a light-year?",
+                options: ["A unit of time", "A unit of distance", "The time it takes for light to reach Earth", "The distance light travels in one year"],
+                correctAnswer: "The distance light travels in one year"
+            },
+            {
+                question: "What causes day and night on Earth?",
+                options: ["Earth's revolution around the Sun", "Earth's rotation on its axis", "The tilt of Earth's axis", "Solar flares"],
+                correctAnswer: "Earth's rotation on its axis"
+            },
+            {
+                question: "What is the largest star in our solar system?",
+                options: ["Sirius", "Betelgeuse", "The Sun", "Polaris"],
+                correctAnswer: "The Sun"
+            },
+            {
+                question: "What are shooting stars also known as?",
+                options: ["Comets", "Asteroids", "Meteors", "Nebulae"],
+                correctAnswer: "Meteors"
+            }
+        ];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let userAnswers = [];
+        const questionContainer = document.getElementById('question-container');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const feedback = document.getElementById('feedback');
+        const nextButton = document.getElementById('next-button');
+        const resultsContainer = document.getElementById('results-container');
+        const finalScoreDisplay = document.getElementById('final-score');
+        const restartButton = document.getElementById('restart-button');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+
+        function displayQuestion() {
+            const currentQuestion = quizData[currentQuestionIndex];
+            questionText.textContent = currentQuestion.question;
+            optionsContainer.innerHTML = currentQuestion.options.map(option => `
+                <button class="option-button" data-option="${option}">${option}</button>
+            `).join('');
+            feedback.classList.add('hidden');
+            nextButton.classList.add('hidden');
+            nextButton.disabled = true;
+            nextButton.classList.remove('hover:bg-blue-600');
+            const optionButtons = document.querySelectorAll('.option-button');
+            optionButtons.forEach(button => {
+                button.addEventListener('click', handleOptionSelect);
+                button.disabled = false;
+            });
+            updateProgressBar();
+            updateProgressText();
+        }
+
+        function handleOptionSelect(event) {
+            const selectedOption = event.target.dataset.option;
+            const currentQuestion = quizData[currentQuestionIndex];
+            userAnswers[currentQuestionIndex] = selectedOption;
+            let isCorrect = selectedOption === currentQuestion.correctAnswer;
+
+            if (isCorrect) {
+                score++;
+                feedback.textContent = "Correct!";
+                feedback.classList.remove('incorrect-feedback');
+                feedback.classList.add('correct-feedback');
+            } else {
+                feedback.textContent = `Incorrect! The correct answer is ${currentQuestion.correctAnswer}.`;
+                feedback.classList.remove('correct-feedback');
+                feedback.classList.add('incorrect-feedback');
+                const optionButtons = document.querySelectorAll('.option-button');
+                optionButtons.forEach(button => {
+                    if (button.dataset.option === currentQuestion.correctAnswer) {
+                        button.classList.add('correct-answer')
+                    }
+                });
+            }
+
+            feedback.classList.remove('hidden');
+            nextButton.classList.remove('hidden');
+            nextButton.disabled = false;
+            nextButton.classList.add('hover:bg-blue-600');
+            disableOptions();
+        }
+
+        function disableOptions() {
+            const optionButtons = document.querySelectorAll('.option-button');
+            optionButtons.forEach(button => {
+                button.disabled = true;
+            });
+        }
+
+        function enableOptions() {
+            const optionButtons = document.querySelectorAll('.option-button');
+            optionButtons.forEach(button => {
+                button.disabled = false;
+            });
+        }
+
+        function showNextQuestion() {
+            if (currentQuestionIndex < quizData.length - 1) {
+                currentQuestionIndex++;
+                displayQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            questionContainer.classList.add('hidden');
+            nextButton.classList.add('hidden');
+            feedback.classList.add('hidden'); // Ensure feedback is hidden here as well
+            resultsContainer.classList.remove('hidden');
+            finalScoreDisplay.textContent = score;
+            progressBar.style.width = `100%`;
+        }
+
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            userAnswers = [];
+            resultsContainer.classList.add('hidden');
+            questionContainer.classList.remove('hidden');
+            displayQuestion();
+        }
+
+        function updateProgressBar() {
+            const progress = (currentQuestionIndex / quizData.length) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+
+        function updateProgressText() {
+            progressText.textContent = `Question: ${currentQuestionIndex + 1}/${quizData.length}`;
+        }
+
+        nextButton.addEventListener('click', showNextQuestion);
+        restartButton.addEventListener('click', restartQuiz);
+
+        displayQuestion();
+    </script>
+</body>
+</html>
